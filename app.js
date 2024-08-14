@@ -61,11 +61,14 @@ function initializeUserDrive() {
 
 // Function to create a folder in Google Drive
 function createFolder(folderName) {
-    return new Promise((resolve, reject) => {
-        // Google Drive API logic to create folder
-        // Placeholder: Replace with actual API call
-        const mockFolderId = 'mock-folder-id';
-        resolve(mockFolderId);
+    return gapi.client.drive.files.create({
+        resource: {
+            'name': folderName,
+            'mimeType': 'application/vnd.google-apps.folder'
+        },
+        fields: 'id'
+    }).then((response) => {
+        return response.result.id;
     });
 }
 
@@ -75,23 +78,94 @@ document.getElementById('upload-button').addEventListener('click', () => {
     if (file) {
         uploadFileToDrive(file).then(fileId => {
             console.log('Uploaded File ID:', fileId);
-            // Additional logic like creating summaries, quizzes, etc.
+            processFileWithAI(fileId);
         });
     }
 });
 
 function uploadFileToDrive(file) {
-    return new Promise((resolve, reject) => {
-        // Google Drive API logic to upload file to specific folder
-        // Placeholder: Replace with actual API call
-        const mockFileId = 'mock-file-id';
-        resolve(mockFileId);
+    const metadata = {
+        'name': file.name,
+        'mimeType': file.type,
+        'parents': [/* SKLearn Folder ID */]
+    };
+
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+    form.append('file', file);
+
+    return gapi.client.request({
+        path: 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+        method: 'POST',
+        params: { uploadType: 'multipart' },
+        headers: { 'Content-Type': 'multipart/related' },
+        body: form
+    }).then((response) => {
+        return response.result.id;
     });
 }
 
-// AI Integration Placeholder
+// AI Integration with OpenAI
 function processFileWithAI(fileId) {
-    // Placeholder function for AI processing
-    // Use OpenAI API here to generate summaries and quizzes
-    console.log('Processing file with AI:', fileId);
+    // Retrieve the document from Google Drive
+    retrieveDocumentFromDrive(fileId).then(documentText => {
+        // Use OpenAI API to generate a summary
+        const prompt = `Summarize the following document: ${documentText}`;
+        fetch('https://api.openai.com/v1/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer YOUR_OPENAI_API_KEY`
+            },
+            body: JSON.stringify({
+                model: 'text-davinci-003',
+                prompt: prompt,
+                max_tokens: 150,
+                temperature: 0.7
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const summary = data.choices[0].text.trim();
+            console.log('AI-Generated Summary:', summary);
+            // Save the summary back to Google Drive or Firestore
+            saveSummaryToDrive(fileId, summary);
+        })
+        .catch(error => {
+            console.error('Error processing document with AI:', error);
+        });
+    });
+}
+
+// Function to retrieve document text from Google Drive
+function retrieveDocumentFromDrive(fileId) {
+    return gapi.client.drive.files.get({
+        fileId: fileId,
+        alt: 'media'
+    }).then(response => {
+        return response.body;
+    });
+}
+
+// Function to save AI-generated summary to Google Drive
+function saveSummaryToDrive(fileId, summary) {
+    const metadata = {
+        'name': 'Summary of ' + fileId,
+        'mimeType': 'text/plain',
+        'parents': [/* SKLearn Folder ID */]
+    };
+
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+    form.append('file', new Blob([summary], { type: 'text/plain' }));
+
+    return gapi.client.request({
+        path: 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+        method: 'POST',
+        params: { uploadType: 'multipart' },
+        headers: { 'Content-Type': 'multipart/related' },
+        body: form
+    }).then((response) => {
+        console.log('Summary saved to Google Drive');
+    });
 }
