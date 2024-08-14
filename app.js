@@ -18,15 +18,19 @@ let user = null;
 
 // Check if a user is already signed in and redirect if necessary
 auth.onAuthStateChanged((u) => {
-    if (u) {
+    const currentPage = window.location.pathname.split("/").pop();
+    const protectedPages = ["dashboard.html"]; // Add other protected pages here
+
+    if (!u && protectedPages.includes(currentPage)) {
+        // User is not logged in and trying to access a protected page
+        window.location.href = "index.html"; // Redirect to sign-in page
+    } else if (u) {
         user = u;
         initializeUserDrive();
         console.log("User is signed in:", user.email);
-        // Optionally, redirect to the dashboard or update the UI
-        document.getElementById("welcome-message").innerText = `Welcome, ${user.displayName}`;
-    } else {
-        console.log("No user is signed in.");
-        // Optionally redirect to the sign-in page or show a login prompt
+        if (document.getElementById("welcome-message")) {
+            document.getElementById("welcome-message").innerText = `Welcome, ${user.displayName}`;
+        }
     }
 });
 
@@ -38,8 +42,9 @@ document.getElementById("google-sign-in").addEventListener("click", function () 
             user = result.user;
             console.log("User signed in:", user.email);
             initializeUserDrive();
-            // Optionally update the UI to reflect the signed-in state
-            document.getElementById("welcome-message").innerText = `Welcome, ${user.displayName}`;
+            if (document.getElementById("welcome-message")) {
+                document.getElementById("welcome-message").innerText = `Welcome, ${user.displayName}`;
+            }
         })
         .catch((error) => {
             console.error("Error during sign-in:", error);
