@@ -1,0 +1,72 @@
+/* styles.css */
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 20px 0;
+}
+
+h1 {
+    margin: 0;
+    font-size: 3em;
+}
+
+p {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+main {
+    padding: 20px;
+}
+
+.features {
+    margin-top: 30px;
+}
+
+.features h2 {
+    font-size: 2em;
+}
+
+.features ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.features ul li {
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+.login {
+    margin-top: 50px;
+}
+
+#google-sign-in {
+    padding: 15px 30px;
+    font-size: 1.5em;
+    background-color: #4285F4;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#google-sign-in:hover {
+    background-color: #357ae8;
+}
+
+footer {
+    margin-top: 50px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 0;
+}
