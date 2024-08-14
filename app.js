@@ -17,6 +17,25 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 let user = null;
 
+// Load the Google API client and initialize it
+function loadGapiClient() {
+    return new Promise((resolve, reject) => {
+        gapi.load('client:auth2', () => {
+            gapi.client.init({
+                apiKey: firebaseConfig.apiKey,
+                clientId: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+                discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
+                scope: 'https://www.googleapis.com/auth/drive.file'
+            }).then(() => {
+                resolve();
+            }).catch(error => {
+                console.error("Error initializing Google API client:", error);
+                reject(error);
+            });
+        });
+    });
+}
+
 // Check if a user is already signed in and redirect to dashboard if on login page
 auth.onAuthStateChanged((u) => {
     const currentPage = window.location.pathname.split("/").pop();
@@ -27,8 +46,10 @@ auth.onAuthStateChanged((u) => {
     } else if (u) {
         // User is logged in and on any other page
         user = u;
-        initializeUserDrive();
-        storeUserInFirestore(user);
+        loadGapiClient().then(() => {
+            initializeUserDrive();
+            storeUserInFirestore(user);
+        });
         console.log("User is signed in:", user.email);
         if (document.getElementById("welcome-message")) {
             document.getElementById("welcome-message").innerText = `Welcome, ${user.displayName}`;
@@ -46,9 +67,11 @@ document.getElementById("google-sign-in").addEventListener("click", function () 
         .then((result) => {
             user = result.user;
             console.log("User signed in:", user.email);
-            initializeUserDrive();
-            storeUserInFirestore(user);
-            window.location.href = "dashboard.html";  // Redirect to dashboard
+            loadGapiClient().then(() => {
+                initializeUserDrive();
+                storeUserInFirestore(user);
+                window.location.href = "dashboard.html";  // Redirect to dashboard
+            });
         })
         .catch((error) => {
             console.error("Error during sign-in:", error);
@@ -56,29 +79,18 @@ document.getElementById("google-sign-in").addEventListener("click", function () 
 });
 
 function initializeUserDrive() {
-    // Create or get SKLearn folder in user's Google Drive
-    createFolder('SKLearn').then(folderId => {
-        console.log('SKLearn Folder ID:', folderId);
-        // Optionally store the folder ID in Firestore
-        storeUserInFirestore(user, folderId);
-    });
+    const folderName = 'SKLearn';
+    
+    createFolder(folderName)
+        .then(folderId => {
+            console.log('SKLearn Folder ID:', folderId);
+            storeUserInFirestore(user, folderId);  // Store the folder ID in Firestore
+        })
+        .catch(error => {
+            console.error('Error creating folder in Google Drive:', error);
+        });
 }
 
-function storeUserInFirestore(user, folderId = null) {
-    const userRef = db.collection('users').doc(user.uid);
-    userRef.set({
-        email: user.email,
-        googleDriveFolderID: folderId
-    }, { merge: true })
-    .then(() => {
-        console.log('User information saved to Firestore');
-    })
-    .catch(error => {
-        console.error('Error saving user to Firestore:', error);
-    });
-}
-
-// Function to create a folder in Google Drive
 function createFolder(folderName) {
     return gapi.client.drive.files.create({
         resource: {
@@ -88,6 +100,9 @@ function createFolder(folderName) {
         fields: 'id'
     }).then((response) => {
         return response.result.id;
+    }).catch(error => {
+        console.error('Error creating folder:', error);
+        throw error;
     });
 }
 
@@ -122,6 +137,9 @@ function uploadFileToDrive(file) {
         body: form
     }).then((response) => {
         return response.result.id;
+    }).catch(error => {
+        console.error('Error uploading file:', error);
+        throw error;
     });
 }
 
@@ -179,6 +197,9 @@ function retrieveDocumentFromDrive(fileId) {
         alt: 'media'
     }).then(response => {
         return response.body;
+    }).catch(error => {
+        console.error('Error retrieving document:', error);
+        throw error;
     });
 }
 
@@ -202,5 +223,8 @@ function saveSummaryToDrive(fileId, summary) {
         body: form
     }).then((response) => {
         console.log('Summary saved to Google Drive');
+    }).catch(error => {
+        console.error('Error saving summary:', error);
+        throw error;
     });
 }
