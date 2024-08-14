@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKLearn</title>
+    <title>SKLearnAPP</title>
+    <!-- Include Firebase via CDN -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js"></script>
 </head>
 <body>
     <header>
-        <h1>SKLearn</h1>
+        <h1>SKLearnAPP</h1>
         <p>Your learning, your way.</p>
     </header>
     
@@ -20,17 +21,13 @@
             <h2>Features</h2>
             <ul>
                 <li>AI-powered document summarization</li>
-                <li>AI-Generated Interactive learning games</li>
-                <li>AI-Generated Personalized study tools</li>
+                <li>Interactive learning games</li>
+                <li>Personalized study tools</li>
             </ul>
-            
-            <h2>
-                Secure, seamless, and accessible anytime.
-            </h2>
         </section>
         
         <section class="login">
-            <button id="google-sign-in">Sign in with Google to start</button>
+            <button id="google-sign-in">Sign in with Google to get started</button>
         </section>
     </main>
     
