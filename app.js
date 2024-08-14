@@ -169,7 +169,7 @@ function processFileWithAI(fileId) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer YOUR_OPENAI_API_KEY`
+                'Authorization': `Bearer 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`
             },
             body: JSON.stringify({
                 model: 'text-davinci-003',
