@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKLearnAPP Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome to SKLearnAPP</h1>
+        <p>Your AI-enhanced learning platform</p>
+    </header>
+    
+    <main>
+        <section class="grid-container">
+            <div class="grid-item" id="my-files">
+                <h2>My Files</h2>
+                <ul id="file-list">
+                    <!-- Dynamically populated list of files -->
+                </ul>
+            </div>
+            <div class="grid-item" id="upload-file">
+                <h2>Upload New Document</h2>
+                <input type="file" id="file-upload" />
+                <button id="upload-button">Upload</button>
+            </div>
+            <div class="grid-item" id="ai-tools">
+                <h2>AI Summary & Quizzes</h2>
+                <div id="summary-editor">
+                    <h3>Summary</h3>
+                    <textarea id="summary-text" placeholder="Summary will appear here..."></textarea>
+                </div>
+                <div id="mcq-editor">
+                    <h3>Multiple Choice Quiz</h3>
+                    <!-- Quiz editor will go here -->
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2024 SKLearnAPP</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
