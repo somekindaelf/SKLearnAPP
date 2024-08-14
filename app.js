@@ -11,26 +11,31 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 // Initialize Firebase Authentication
 const auth = firebase.auth();
 let user = null;
 
-// Check if a user is already signed in and redirect if necessary
+// Check if a user is already signed in and redirect to dashboard if on login page
 auth.onAuthStateChanged((u) => {
     const currentPage = window.location.pathname.split("/").pop();
-    const protectedPages = ["dashboard.html"]; // Add other protected pages here
 
-    if (!u && protectedPages.includes(currentPage)) {
-        // User is not logged in and trying to access a protected page
-        window.location.href = "index.html"; // Redirect to sign-in page
+    if (u && currentPage === "index.html") {
+        // User is logged in and is on the login page, redirect to dashboard
+        window.location.href = "dashboard.html";
     } else if (u) {
+        // User is logged in and on any other page
         user = u;
         initializeUserDrive();
+        storeUserInFirestore(user);
         console.log("User is signed in:", user.email);
         if (document.getElementById("welcome-message")) {
             document.getElementById("welcome-message").innerText = `Welcome, ${user.displayName}`;
         }
+    } else if (!u && currentPage !== "index.html") {
+        // User is not logged in and is trying to access a protected page, redirect to sign-in page
+        window.location.href = "index.html";
     }
 });
 
@@ -42,9 +47,8 @@ document.getElementById("google-sign-in").addEventListener("click", function () 
             user = result.user;
             console.log("User signed in:", user.email);
             initializeUserDrive();
-            if (document.getElementById("welcome-message")) {
-                document.getElementById("welcome-message").innerText = `Welcome, ${user.displayName}`;
-            }
+            storeUserInFirestore(user);
+            window.location.href = "dashboard.html";  // Redirect to dashboard
         })
         .catch((error) => {
             console.error("Error during sign-in:", error);
@@ -55,7 +59,22 @@ function initializeUserDrive() {
     // Create or get SKLearn folder in user's Google Drive
     createFolder('SKLearn').then(folderId => {
         console.log('SKLearn Folder ID:', folderId);
-        // Load existing documents or set up further actions
+        // Optionally store the folder ID in Firestore
+        storeUserInFirestore(user, folderId);
+    });
+}
+
+function storeUserInFirestore(user, folderId = null) {
+    const userRef = db.collection('users').doc(user.uid);
+    userRef.set({
+        email: user.email,
+        googleDriveFolderID: folderId
+    }, { merge: true })
+    .then(() => {
+        console.log('User information saved to Firestore');
+    })
+    .catch(error => {
+        console.error('Error saving user to Firestore:', error);
     });
 }
 
@@ -79,6 +98,7 @@ document.getElementById('upload-button').addEventListener('click', () => {
         uploadFileToDrive(file).then(fileId => {
             console.log('Uploaded File ID:', fileId);
             processFileWithAI(fileId);
+            storeFileInFirestore(user, fileId, file.name);
         });
     }
 });
@@ -105,6 +125,22 @@ function uploadFileToDrive(file) {
     });
 }
 
+// Store file details in Firestore
+function storeFileInFirestore(user, fileId, fileName) {
+    const fileRef = db.collection('users').doc(user.uid).collection('documents').doc(fileId);
+    fileRef.set({
+        fileName: fileName,
+        fileId: fileId,
+        uploadTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then(() => {
+        console.log('File information saved to Firestore');
+    })
+    .catch(error => {
+        console.error('Error saving file to Firestore:', error);
+    });
+}
+
 // AI Integration with OpenAI
 function processFileWithAI(fileId) {
     // Retrieve the document from Google Drive
@@ -128,7 +164,6 @@ function processFileWithAI(fileId) {
         .then(data => {
             const summary = data.choices[0].text.trim();
             console.log('AI-Generated Summary:', summary);
-            // Save the summary back to Google Drive or Firestore
             saveSummaryToDrive(fileId, summary);
         })
         .catch(error => {
