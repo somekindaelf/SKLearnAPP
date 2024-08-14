@@ -1,3 +1,7 @@
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 // Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyCPptntIlqX404tnvfzSukt-wF8hG2584k",
@@ -9,9 +13,6 @@ const firebaseConfig = {
     measurementId: "G-335VJC09CJ"
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
 
 // Initialize Firebase Authentication
 const auth = firebase.auth();
