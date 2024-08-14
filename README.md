@@ -7,7 +7,7 @@ A project utilising the power of large language models to summarise and then ada
 
 - Dashboard page with upload file capabilites
 
-#0.0.2
+# 0.0.2
 
 - Landing page with Google login
 - Google oAuth setup
