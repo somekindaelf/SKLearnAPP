@@ -2,12 +2,13 @@
 
 // Firebase configuration (replace with your Firebase config)
 const firebaseConfig = {
-    apiKey: "your-api-key",
-    authDomain: "your-project-id.firebaseapp.com",
-    projectId: "your-project-id",
-    storageBucket: "your-project-id.appspot.com",
-    messagingSenderId: "your-messaging-sender-id",
-    appId: "your-app-id",
+    apiKey: "AIzaSyCPptntIlqX404tnvfzSukt-wF8hG2584k",
+    authDomain: "sklearnapp.firebaseapp.com",
+    projectId: "sklearnapp",
+    storageBucket: "sklearnapp.appspot.com",
+    messagingSenderId: "767064605163",
+    appId: "1:767064605163:web:fa06f4a463a4408666d9ae",
+    measurementId: "G-335VJC09CJ"
 };
 
 // Initialize Firebase
