@@ -16,15 +16,17 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 let user = null;
 
-// Check if a user is already signed in
+// Check if a user is already signed in and redirect if necessary
 auth.onAuthStateChanged((u) => {
     if (u) {
         user = u;
         initializeUserDrive();
         console.log("User is signed in:", user.email);
+        // Optionally, redirect to the dashboard or update the UI
+        document.getElementById("welcome-message").innerText = `Welcome, ${user.displayName}`;
     } else {
         console.log("No user is signed in.");
-        // Optionally redirect to login page if no user is signed in
+        // Optionally redirect to the sign-in page or show a login prompt
     }
 });
 
@@ -36,6 +38,8 @@ document.getElementById("google-sign-in").addEventListener("click", function () 
             user = result.user;
             console.log("User signed in:", user.email);
             initializeUserDrive();
+            // Optionally update the UI to reflect the signed-in state
+            document.getElementById("welcome-message").innerText = `Welcome, ${user.displayName}`;
         })
         .catch((error) => {
             console.error("Error during sign-in:", error);
