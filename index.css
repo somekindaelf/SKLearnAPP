@@ -27,7 +27,7 @@ h1, h2 {
 
 /* Features Section */
 .features ul {
-    list-style-type: none;
+    list-style-type: georgian;
     padding: 0;
     margin: 20px 0;
 }
@@ -43,7 +43,7 @@ h1, h2 {
 /* Google Sign-In Button */
 #google-sign-in {
     padding: 10px 20px;
-    background-color: #3498db;
+    background-color: #075a6e;
     color: #ffffff;
     border-radius: 5px;
     cursor: pointer;
