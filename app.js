@@ -15,23 +15,39 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 let user = null;
 
-// Ensure gapi is fully loaded before using it
-function loadGapiClient() {
-    return new Promise((resolve, reject) => {
-        gapi.load('client:auth2', () => {
-            gapi.client.init({
-                apiKey: firebaseConfig.apiKey,
-                clientId: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
-                discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
-                scope: 'https://www.googleapis.com/auth/drive.file'
-            }).then(() => {
-                resolve();
-            }).catch(error => {
-                console.error("Error initializing Google API client:", error);
-                reject(error);
-            });
-        });
+// Initialize Google Identity Services
+function initializeGis() {
+    google.accounts.id.initialize({
+        client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+        callback: handleCredentialResponse
     });
+
+    google.accounts.id.renderButton(
+        document.getElementById("google-sign-in"),
+        { theme: "outline", size: "large" }  // Customization options
+    );
+
+    google.accounts.id.prompt();  // Display the One Tap prompt
+}
+
+// Handle Google Sign-In response
+function handleCredentialResponse(response) {
+    const credential = response.credential;
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({
+        login_hint: credential
+    });
+    auth.signInWithCredential(firebase.auth.GoogleAuthProvider.credential(credential))
+        .then((result) => {
+            user = result.user;
+            console.log("User signed in:", user.email);
+            initializeUserDrive();
+            storeUserInFirestore(user);
+            window.location.href = "dashboard.html";  // Redirect to dashboard
+        })
+        .catch((error) => {
+            console.error("Error during sign-in:", error);
+        });
 }
 
 // Ensure DOM is fully loaded before running scripts
@@ -43,10 +59,8 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = "dashboard.html";
         } else if (u) {
             user = u;
-            loadGapiClient().then(() => {
-                initializeUserDrive();
-                storeUserInFirestore(user);
-            });
+            initializeUserDrive();
+            storeUserInFirestore(user);
             console.log("User is signed in:", user.email);
             if (document.getElementById("welcome-message")) {
                 document.getElementById("welcome-message").innerText = `Welcome, ${user.displayName}`;
@@ -56,23 +70,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Google Sign-In
-    document.getElementById("google-sign-in").addEventListener("click", function () {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider)
-            .then((result) => {
-                user = result.user;
-                console.log("User signed in:", user.email);
-                loadGapiClient().then(() => {
-                    initializeUserDrive();
-                    storeUserInFirestore(user);
-                    window.location.href = "dashboard.html";  // Redirect to dashboard
-                });
-            })
-            .catch((error) => {
-                console.error("Error during sign-in:", error);
-            });
-    });
+    // Initialize Google Identity Services for Sign-In
+    initializeGis();
 
     // Handle file upload
     document.getElementById('upload-button').addEventListener('click', () => {
@@ -86,32 +85,3 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
-// AI Processing Function
-function processFileWithAI(fileId) {
-    retrieveDocumentFromDrive(fileId).then(documentText => {
-        const prompt = `Summarize the following document: ${documentText}`;
-        fetch('https://api.openai.com/v1/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer YOUR_OPENAI_API_KEY`
-            },
-            body: JSON.stringify({
-                model: 'text-davinci-003',
-                prompt: prompt,
-                max_tokens: 150,
-                temperature: 0.7
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            const summary = data.choices[0].text.trim();
-            document.getElementById('summary-text').value = summary;
-            saveSummaryToDrive(fileId, summary);
-        })
-        .catch(error => {
-            console.error('Error processing document with AI:', error);
-        });
-    });
-}
