@@ -15,6 +15,9 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 let user = null;
 
+// OpenAI API key
+const openaiApiKey = 'sk-8Y1zFY4T8lWNjm5iQQSkOf721YnHusBfmFKHyOqcZPT3BlbkFJBs5uz-stxjwRH7DxrF-3d36tBNzGv8r3H4yHMBbAQA';
+
 // Ensure DOM is fully loaded before running scripts
 document.addEventListener('DOMContentLoaded', function () {
     auth.onAuthStateChanged((u) => {
@@ -73,18 +76,46 @@ function storeUserInFirestore(user) {
     });
 }
 
-// Function to process the file content with AI
+// Function to process the file content with OpenAI API
 function processFileWithAI(fileContent) {
     const summaryText = document.getElementById('summary-text');
     const mcqText = document.getElementById('mcq-text');
 
-    // Placeholder for actual AI processing
-    const summary = "This is a summary of the uploaded document.";
-    const mcq = "1. What is the main point of the document?\nA) Option 1\nB) Option 2\nC) Option 3\nD) Option 4";
+    const data = {
+        model: "text-davinci-003",
+        prompt: `Summarize the following document and generate a set of 5 multiple-choice questions based on the content:\n\n${fileContent}\n\nSummary:\n`,
+        temperature: 0.7,
+        max_tokens: 1500,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+    };
 
-    // Display the processed content
-    summaryText.value = summary;
-    mcqText.value = mcq;
+    // Make a POST request to the OpenAI API
+    fetch('https://api.openai.com/v1/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${openaiApiKey}`
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(response => {
+        const generatedText = response.choices[0].text.trim();
+        
+        // Assume the AI returns the summary first, followed by the MCQs
+        const [summary, ...mcqs] = generatedText.split('MCQ:');
+        
+        // Display the results
+        summaryText.value = summary.trim();
+        mcqText.value = mcqs.join('MCQ:').trim();
+    })
+    .catch(error => {
+        console.error("Error processing file with OpenAI:", error);
+        summaryText.value = "Error generating summary.";
+        mcqText.value = "Error generating MCQs.";
+    });
 }
 
 // Function to download the summary as a text file
