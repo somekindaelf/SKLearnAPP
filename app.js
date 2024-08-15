@@ -21,7 +21,7 @@ function loadGapiClient() {
         gapi.load('client:auth2', () => {
             gapi.client.init({
                 apiKey: firebaseConfig.apiKey,
-                clientId: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+                clientId: 'sklearnapp.apps.googleusercontent.com',
                 discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
                 scope: 'https://www.googleapis.com/auth/drive.file'
             }).then(() => {
