@@ -16,7 +16,7 @@ const auth = firebase.auth();
 let user = null;
 
 // OpenAI API key
-const openaiApiKey = 'sk-8Y1zFY4T8lWNjm5iQQSkOf721YnHusBfmFKHyOqcZPT3BlbkFJBs5uz-stxjwRH7DxrF-3d36tBNzGv8r3H4yHMBbAQA';
+const openaiApiKey = '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';
 
 // Ensure DOM is fully loaded before running scripts
 document.addEventListener('DOMContentLoaded', function () {
@@ -100,16 +100,25 @@ function processFileWithAI(fileContent) {
         },
         body: JSON.stringify(data)
     })
-    .then(response => response.json())
     .then(response => {
-        const generatedText = response.choices[0].text.trim();
-        
-        // Assume the AI returns the summary first, followed by the MCQs
-        const [summary, ...mcqs] = generatedText.split('MCQ:');
-        
-        // Display the results
-        summaryText.value = summary.trim();
-        mcqText.value = mcqs.join('MCQ:').trim();
+        if (!response.ok) {
+            throw new Error(`OpenAI API returned an error: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(response => {
+        if (response.choices && response.choices.length > 0) {
+            const generatedText = response.choices[0].text.trim();
+
+            // Assume the AI returns the summary first, followed by the MCQs
+            const [summary, ...mcqs] = generatedText.split('MCQ:');
+
+            // Display the results
+            summaryText.value = summary.trim();
+            mcqText.value = mcqs.join('MCQ:').trim();
+        } else {
+            throw new Error("No valid response from OpenAI.");
+        }
     })
     .catch(error => {
         console.error("Error processing file with OpenAI:", error);
