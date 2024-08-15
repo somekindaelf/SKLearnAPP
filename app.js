@@ -15,9 +15,6 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 let user = null;
 
-// OpenAI API key
-const openaiApiKey = 'sk-WaZZ0fseSoETzSk_d9nvNrhNo0M8WrnnbcE_e57TBZT3BlbkFJ5lUI-tXLgaXnM8GIuAjJieaPyyUFkV7VvVHu3hMyAA';
-
 // Ensure DOM is fully loaded before running scripts
 document.addEventListener('DOMContentLoaded', function () {
     auth.onAuthStateChanged((u) => {
@@ -76,33 +73,22 @@ function storeUserInFirestore(user) {
     });
 }
 
-// Function to process the file content with OpenAI API
+// Function to process the file content with OpenAI via Firebase Cloud Function
 function processFileWithAI(fileContent) {
     const summaryText = document.getElementById('summary-text');
     const mcqText = document.getElementById('mcq-text');
 
-    const data = {
-        model: "text-davinci-003",
-        prompt: `Summarize the following document and generate a set of multiple-choice questions based on the content, be completely objective and thorough, including all bits of information and make the MCQs:\n\n${fileContent}\n\nSummary:\n`,
-        temperature: 0.7,
-        max_tokens: 1500,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
-    };
-
-    // Make a POST request to the OpenAI API
-    fetch('https://api.openai.com/v1/completions', {
+    // Sending a request to the Firebase Cloud Function
+    fetch('https://us-central1-sklearnapp.cloudfunctions.net/processWithOpenAI', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${openaiApiKey}`
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify({ fileContent })
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error(`OpenAI API returned an error: ${response.status}`);
+            throw new Error(`Firebase Function returned an error: ${response.status}`);
         }
         return response.json();
     })
@@ -117,11 +103,11 @@ function processFileWithAI(fileContent) {
             summaryText.value = summary.trim();
             mcqText.value = mcqs.join('MCQ:').trim();
         } else {
-            throw new Error("No valid response from OpenAI.");
+            throw new Error("No valid response from Firebase Function.");
         }
     })
     .catch(error => {
-        console.error("Error processing file with OpenAI:", error);
+        console.error("Error processing file with Firebase Function:", error);
         summaryText.value = "Error generating summary.";
         mcqText.value = "Error generating MCQs.";
     });
