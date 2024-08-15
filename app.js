@@ -16,7 +16,7 @@ const auth = firebase.auth();
 let user = null;
 
 // Ensure DOM is fully loaded before running scripts
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     auth.onAuthStateChanged((u) => {
         const currentPage = window.location.pathname.split("/").pop();
 
@@ -24,8 +24,8 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = "dashboard.html";
         } else if (u) {
             user = u;
+            storeUserInFirestore(user); // Ensure this function is called on login
             initializeUserDrive();
-            storeUserInFirestore(user);
             console.log("User is signed in:", user.email);
             if (document.getElementById("welcome-message")) {
                 document.getElementById("welcome-message").innerText = `Welcome, ${user.displayName}`;
@@ -58,6 +58,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Store user information in Firestore
+function storeUserInFirestore(user) {
+    const userDocRef = db.collection('users').doc(user.uid);
+
+    userDocRef.set({
+        email: user.email,
+        displayName: user.displayName,
+        googleId: user.uid, // Storing the Google UID
+        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }) // Use merge to avoid overwriting existing data
+        .then(() => {
+            console.log("User information successfully stored in Firestore.");
+        })
+        .catch((error) => {
+            console.error("Error storing user information:", error);
+        });
+}
+
 // Initialize Google Identity Services
 function initializeGis() {
     console.log("Initializing Google Identity Services...");
@@ -87,8 +105,8 @@ function handleCredentialResponse(response) {
         .then((result) => {
             user = result.user;
             console.log("User signed in:", user.email);
+            storeUserInFirestore(user); // Store user information in Firestore
             initializeUserDrive();
-            storeUserInFirestore(user);
             window.location.href = "dashboard.html";
         })
         .catch((error) => {
@@ -106,6 +124,7 @@ function initializeUserDrive() {
             discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
             scope: 'https://www.googleapis.com/auth/drive.file'
         }).then(() => {
+            console.log("Google API client initialized successfully.");
             return gapi.client.drive.files.list({
                 'pageSize': 10,
                 'fields': "nextPageToken, files(id, name)"
@@ -114,8 +133,10 @@ function initializeUserDrive() {
             console.log("Files in Drive:", response.result.files);
             createAppFolderIfNotExists();
         }).catch((error) => {
-            console.error("Error initializing Google Drive:", error);
+            console.error("Error listing files in Google Drive:", error);
         });
+    }, (error) => {
+        console.error("Error loading Google API client:", error);
     });
 }
 
