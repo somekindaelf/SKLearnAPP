@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize the Google Sign-In button
     google.accounts.id.initialize({
-        client_id: "YOUR_GOOGLE_CLIENT_ID",  // Replace with your actual Google Client ID
+        client_id: "767064605163-4p4e5fgu2729kb61trb7r5pjpbcim9vl.apps.googleusercontent.com",  // Replace with your actual Google Client ID
         callback: handleCredentialResponse
     });
 
