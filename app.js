@@ -92,3 +92,61 @@ function handleCredentialResponse(response) {
             console.error("Error during sign-in:", error);
         });
 }
+
+// Initialize Google Drive for the user
+function initializeUserDrive() {
+    console.log("Initializing user Google Drive...");
+    gapi.load('client', () => {
+        gapi.client.init({
+            apiKey: firebaseConfig.apiKey,
+            clientId: '767064605163-39pfok22rr97uavo82b5050hh49adan9.apps.googleusercontent.com',
+            discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
+            scope: 'https://www.googleapis.com/auth/drive.file'
+        }).then(() => {
+            return gapi.client.drive.files.list({
+                'pageSize': 10,
+                'fields': "nextPageToken, files(id, name)"
+            });
+        }).then((response) => {
+            console.log("Files in Drive:", response.result.files);
+            createAppFolderIfNotExists();
+        }).catch((error) => {
+            console.error("Error initializing Google Drive:", error);
+        });
+    });
+}
+
+// Create an app-specific folder in Google Drive if it doesn't exist
+function createAppFolderIfNotExists() {
+    const folderName = 'SKLearnApp';
+
+    gapi.client.drive.files.list({
+        'q': `mimeType='application/vnd.google-apps.folder' and name='${folderName}' and trashed=false`,
+        'fields': 'files(id, name)'
+    }).then((response) => {
+        if (response.result.files.length > 0) {
+            console.log(`Folder '${folderName}' already exists.`);
+        } else {
+            createAppFolder(folderName);
+        }
+    }).catch((error) => {
+        console.error("Error checking for existing folder:", error);
+    });
+}
+
+// Create a folder in Google Drive
+function createAppFolder(folderName) {
+    const fileMetadata = {
+        'name': folderName,
+        'mimeType': 'application/vnd.google-apps.folder'
+    };
+
+    gapi.client.drive.files.create({
+        resource: fileMetadata,
+        fields: 'id'
+    }).then((response) => {
+        console.log(`Created folder '${folderName}' with ID: ${response.result.id}`);
+    }).catch((error) => {
+        console.error("Error creating folder:", error);
+    });
+}

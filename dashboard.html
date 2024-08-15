@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - SKLearnAPP</title>
+    <title>Dashboard - SKLearn</title>
     <link rel="stylesheet" href="dashboard.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
@@ -13,8 +13,12 @@
     <script src="app.js" defer></script>
 </head>
 <body>
+    <header>
+        <h1 id="dashboard-title" class="final-title">SKLearn</h1>
+        <p class="tagline"><i>Your learning, the AI way.</i></p>
+    </header>
+
     <div class="container">
-        <h1>SKLearn</h1>
         <h2 id="welcome-message">Your Dashboard</h2>
         <div class="file-upload">
             <input type="file" id="file-upload">
@@ -29,5 +33,9 @@
             <!-- Dynamically populate this section with user files -->
         </div>
     </div>
+
+    <footer>
+        <p>&copy; 2024 SKLearn</p>
+    </footer>
 </body>
 </html>
