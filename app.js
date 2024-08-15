@@ -83,7 +83,7 @@ function processFileWithAI(fileContent) {
 
     const data = {
         model: "text-davinci-003",
-        prompt: `Summarize the following document and generate a set of 5 multiple-choice questions based on the content:\n\n${fileContent}\n\nSummary:\n`,
+        prompt: `Summarize the following document and generate a set of multiple-choice questions based on the content, be completely objective and thorough, including all bits of information and make the MCQs:\n\n${fileContent}\n\nSummary:\n`,
         temperature: 0.7,
         max_tokens: 1500,
         top_p: 1,
