@@ -15,7 +15,7 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 let user = null;
 
-// Load the Google API client and initialize it
+// Ensure gapi is fully loaded before using it
 function loadGapiClient() {
     return new Promise((resolve, reject) => {
         gapi.load('client:auth2', () => {
@@ -87,35 +87,3 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
-// Functions remain the same: initializeUserDrive, createFolder, uploadFileToDrive, storeFileInFirestore, processFileWithAI, retrieveDocumentFromDrive, saveSummaryToDrive
-// AI Integration with OpenAI (already in your app.js)
-function processFileWithAI(fileId) {
-    retrieveDocumentFromDrive(fileId).then(documentText => {
-        const prompt = `Summarize the following document: ${documentText}`;
-        fetch('https://api.openai.com/v1/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer YOUR_OPENAI_API_KEY`
-            },
-            body: JSON.stringify({
-                model: 'text-davinci-003',
-                prompt: prompt,
-                max_tokens: 150,
-                temperature: 0.7
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            const summary = data.choices[0].text.trim();
-            console.log('AI-Generated Summary:', summary);
-            // Display the summary in the textarea
-            document.getElementById('summary-text').value = summary;
-            saveSummaryToDrive(fileId, summary);
-        })
-        .catch(error => {
-            console.error('Error processing document with AI:', error);
-        });
-    });
-}
