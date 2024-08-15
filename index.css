@@ -1,62 +1,75 @@
 /* General Styles */
 body {
     font-family: 'Tstar Pro', sans-serif;
-    background-color: #f4f4f4; /* Light grey/off-white background */
-    color: #333333; /* Dark text color */
+    background: linear-gradient(to top left, #1b4a7f, #1a3a5f);
+    color: #ffffff;
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+}
+
+/* Header Styling */
+header {
+    text-align: center;
+    margin-bottom: 10px; /* Slightly reduce the bottom margin */
+}
+
+#animated-title {
+    font-size: 48px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.final-title {
+    font-size: 48px;
+    color: #ffffff;
+}
+
+.tagline {
+    font-size: 20px;
+    color: #ffffff;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+    margin-top: 5px; /* Reduce top margin to bring it closer to the title */
 }
 
 /* Container */
 .container {
+    width: 100%;
     max-width: 800px;
-    margin: 50px auto;
     padding: 20px;
-    background-color: #ffffff;
+    background: linear-gradient(to right, #1a3a5f, #1b4a7f);
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
     text-align: center;
-}
-
-/* Headings with 3D Effect */
-h1, h2 {
-    font-size: 36px;
-    color: #2c3e50;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 45vh; /* Reduce height */
+    margin-top: -40px; /* Adjust margin to better center the box */
 }
 
 /* Features Section */
 .features ul {
-    list-style-type: georgian;
+    list-style-type: none;
     padding: 0;
-    margin: 20px 0;
+    margin: 10px 0;
 }
 
 .features li {
-    background-color: #ecf0f1;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     font-size: 18px;
+    color: #ffffff;
 }
 
 /* Google Sign-In Button */
 #google-sign-in {
-    padding: 10px 20px;
-    background-color: #075a6e;
-    color: #ffffff;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    text-transform: uppercase;
-    border: none;
-    margin-top: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease;
-}
-
-#google-sign-in:hover {
-    background-color: #2980b9;
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
 }
 
 /* Footer */
@@ -65,6 +78,6 @@ footer {
     bottom: 10px;
     width: 100%;
     text-align: center;
-    color: #95a5a6;
+    color: #ffffff;
     font-size: 14px;
 }

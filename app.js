@@ -17,21 +17,24 @@ let user = null;
 
 // Initialize Google Identity Services
 function initializeGis() {
+    console.log("Initializing Google Identity Services..."); // Debugging line
     google.accounts.id.initialize({
-        client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+        client_id: '767064605163-39pfok22rr97uavo82b5050hh49adan9.apps.googleusercontent.com',
         callback: handleCredentialResponse
     });
 
     google.accounts.id.renderButton(
         document.getElementById("google-sign-in"),
-        { theme: "outline", size: "large" }  // Customization options
+        { theme: "outline", size: "large" }
     );
 
     google.accounts.id.prompt();  // Display the One Tap prompt
+    console.log("Google Sign-In button rendered."); // Debugging line
 }
 
 // Handle Google Sign-In response
 function handleCredentialResponse(response) {
+    console.log("Handling Google Sign-In response..."); // Debugging line
     const credential = response.credential;
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({
@@ -43,7 +46,7 @@ function handleCredentialResponse(response) {
             console.log("User signed in:", user.email);
             initializeUserDrive();
             storeUserInFirestore(user);
-            window.location.href = "dashboard.html";  // Redirect to dashboard
+            window.location.href = "dashboard.html";
         })
         .catch((error) => {
             console.error("Error during sign-in:", error);
