@@ -15,7 +15,6 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 let user = null;
 
-// Ensure DOM is fully loaded before running scripts
 document.addEventListener('DOMContentLoaded', function () {
     auth.onAuthStateChanged((u) => {
         const currentPage = window.location.pathname.split("/").pop();
@@ -33,6 +32,20 @@ document.addEventListener('DOMContentLoaded', function () {
             window.location.href = "index.html";
         }
     });
+
+    // Initialize the Google Sign-In button
+    google.accounts.id.initialize({
+        client_id: "YOUR_GOOGLE_CLIENT_ID",  // Replace with your actual Google Client ID
+        callback: handleCredentialResponse
+    });
+
+    // Render the Google Sign-In button
+    google.accounts.id.renderButton(
+        document.getElementById("google-sign-in"),
+        { theme: "outline", size: "large" }
+    );
+
+    google.accounts.id.prompt();
 
     // Handle file upload and AI processing
     const uploadButton = document.getElementById('upload-button');
@@ -55,7 +68,11 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('download-mcq-button').addEventListener('click', downloadMCQ);
 });
 
-// Store user information in Firestore
+function handleCredentialResponse(response) {
+    console.log("Encoded JWT ID token: " + response.credential);
+    // Authenticate the user with Firebase or your backend using the JWT token
+}
+
 function storeUserInFirestore(user) {
     const userDocRef = db.collection('users').doc(user.uid);
 
