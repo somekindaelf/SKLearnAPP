@@ -1,51 +1,65 @@
+/* General Styles */
 body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(to right, #2c3e50, #3498db);
-    color: #ffffff;
+    font-family: 'Tstar Pro', sans-serif;
+    background-color: #f4f4f4; /* Light grey/off-white background */
+    color: #333333; /* Dark text color */
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
 }
 
+/* Container */
 .container {
-    text-align: center;
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 40px;
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    max-width: 400px;
-    width: 100%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
-h1 {
+/* Headings with 3D Effect */
+h1, h2 {
     font-size: 36px;
-    margin-bottom: 20px;
-    color: #ecf0f1;
+    color: #2c3e50;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-p {
-    margin-bottom: 30px;
-    color: #bdc3c7;
+/* Features Section */
+.features ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px 0;
 }
 
+.features li {
+    background-color: #ecf0f1;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+/* Google Sign-In Button */
 #google-sign-in {
     padding: 10px 20px;
-    background-color: #db4437;
+    background-color: #3498db;
     color: #ffffff;
-    border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
     text-transform: uppercase;
+    border: none;
+    margin-top: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
 }
 
 #google-sign-in:hover {
-    background-color: #c0392b;
+    background-color: #2980b9;
 }
 
+/* Footer */
 footer {
     position: fixed;
     bottom: 10px;

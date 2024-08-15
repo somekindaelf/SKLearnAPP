@@ -21,7 +21,7 @@ function loadGapiClient() {
         gapi.load('client:auth2', () => {
             gapi.client.init({
                 apiKey: firebaseConfig.apiKey,
-                clientId: '767064605163-39pfok22rr97uavo82b5050hh49adan9.apps.googleusercontent.com',
+                clientId: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
                 discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
                 scope: 'https://www.googleapis.com/auth/drive.file'
             }).then(() => {
@@ -36,7 +36,6 @@ function loadGapiClient() {
 
 // Ensure DOM is fully loaded before running scripts
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if a user is already signed in and redirect to dashboard if on login page
     auth.onAuthStateChanged((u) => {
         const currentPage = window.location.pathname.split("/").pop();
 
@@ -87,3 +86,32 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// AI Processing Function
+function processFileWithAI(fileId) {
+    retrieveDocumentFromDrive(fileId).then(documentText => {
+        const prompt = `Summarize the following document: ${documentText}`;
+        fetch('https://api.openai.com/v1/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer YOUR_OPENAI_API_KEY`
+            },
+            body: JSON.stringify({
+                model: 'text-davinci-003',
+                prompt: prompt,
+                max_tokens: 150,
+                temperature: 0.7
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const summary = data.choices[0].text.trim();
+            document.getElementById('summary-text').value = summary;
+            saveSummaryToDrive(fileId, summary);
+        })
+        .catch(error => {
+            console.error('Error processing document with AI:', error);
+        });
+    });
+}

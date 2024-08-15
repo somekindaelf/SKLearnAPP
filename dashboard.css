@@ -1,11 +1,13 @@
+/* General Styles */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    color: #333;
+    font-family: 'Tstar Pro', sans-serif;
+    background-color: #f4f4f4; /* Light grey/off-white background */
+    color: #333333; /* Dark text color */
     margin: 0;
     padding: 0;
 }
 
+/* Container */
 .container {
     max-width: 800px;
     margin: 50px auto;
@@ -13,13 +15,17 @@ body {
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
     text-align: center;
-    color: #2c3e50;
 }
 
+/* Headings with 3D Effect */
+h1, h2 {
+    font-size: 36px;
+    color: #2c3e50;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* File Upload Section */
 .file-upload {
     text-align: center;
     margin-bottom: 20px;
@@ -29,29 +35,21 @@ h1 {
     display: none;
 }
 
-.file-upload label {
+.file-upload label, #upload-button, #google-sign-in {
     padding: 10px 20px;
     background-color: #3498db;
     color: #ffffff;
     border-radius: 5px;
     cursor: pointer;
-}
-
-.file-upload label:hover {
-    background-color: #2980b9;
-}
-
-#upload-button {
-    padding: 10px 20px;
-    background-color: #3498db;
-    color: #ffffff;
+    font-size: 16px;
+    text-transform: uppercase;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
     margin-top: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
 }
 
-#upload-button:hover {
+.file-upload label:hover, #upload-button:hover, #google-sign-in:hover {
     background-color: #2980b9;
 }
 
@@ -74,6 +72,7 @@ h1 {
     color: #333;
 }
 
+/* Documents List Section */
 .documents-list {
     margin-top: 30px;
 }
@@ -92,4 +91,14 @@ h1 {
     padding: 10px;
     border-radius: 5px;
     margin-bottom: 10px;
+}
+
+/* Footer */
+footer {
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    color: #95a5a6;
+    font-size: 14px;
 }
