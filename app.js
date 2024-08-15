@@ -16,7 +16,7 @@ const auth = firebase.auth();
 let user = null;
 
 // OpenAI API key
-const openaiApiKey = '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';
+const openaiApiKey = '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';
 
 // Ensure DOM is fully loaded before running scripts
 document.addEventListener('DOMContentLoaded', function () {
