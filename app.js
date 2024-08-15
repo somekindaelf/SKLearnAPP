@@ -43,16 +43,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Handle file upload
-    document.getElementById('upload-button').addEventListener('click', () => {
-        const file = document.getElementById('file-upload').files[0];
-        if (file) {
-            uploadFileToDrive(file).then(fileId => {
-                console.log('Uploaded File ID:', fileId);
-                processFileWithAI(fileId);
-                storeFileInFirestore(user, fileId, file.name);
-            });
-        }
-    });
+    const uploadButton = document.getElementById('upload-button');
+    if (uploadButton) {
+        uploadButton.addEventListener('click', () => {
+            const file = document.getElementById('file-upload').files[0];
+            if (file) {
+                uploadFileToDrive(file).then(fileId => {
+                    console.log('Uploaded File ID:', fileId);
+                    processFileWithAI(fileId);
+                    storeFileInFirestore(user, fileId, file.name);
+                });
+            }
+        });
+    }
 });
 
 // Initialize Google Identity Services
